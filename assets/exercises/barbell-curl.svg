@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="46%">
+      <stop offset="0%" stop-color="#27334A" stop-opacity="0.92"/>
+      <stop offset="62%" stop-color="#1A2232" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#161B26" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="limeFade" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#B8F228" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#B8F228" stop-opacity="1"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="800" fill="#161B26"/>
+  <rect width="800" height="800" fill="url(#bgGlow)"/>
+  <ellipse cx="400" cy="642" rx="285" ry="22" fill="#0C1018" opacity="0.65"/>
+  <rect x="120" y="632" width="560" height="10" rx="5" fill="#232C3D"/>
+  
+  <!-- Side 3/4 view curling barbell -->
+  <line x1="368" y1="456" x2="364" y2="616" stroke="#242C3D" stroke-width="30" stroke-linecap="round"/>
+  <g>
+      <path d="M356 610 L396 618 Q404 626 396 634 L354 634 Z" fill="#242C3D"/>
+      <line x1="354" y1="633" x2="398" y2="633" stroke="#B8F228" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  <line x1="368" y1="448" x2="370" y2="304" stroke="#313B4F" stroke-width="48" stroke-linecap="round"/>
+  <line x1="346" y1="426" x2="394" y2="426" stroke="#B8F228" stroke-width="6"/>
+  <circle cx="376" cy="256" r="27" fill="#D5A688"/><path d="M349 256 C349 223, 403 223, 399 248 C370 244, 357 252, 353 264 Z" fill="#1C2331"/>
+  <!-- Upper arm pinned at side, forearm curled up -->
+  <line x1="374" y1="326" x2="378" y2="412" stroke="#D5A688" stroke-width="24" stroke-linecap="round"/>
+  <ellipse cx="382" cy="372" rx="22" ry="28" transform="rotate(0 382 372)" fill="#B8F228" opacity="0.22"/>
+  <line x1="378" y1="412" x2="466" y2="358" stroke="#D5A688" stroke-width="22" stroke-linecap="round"/>
+  <g>
+    <circle cx="472" cy="354" r="40" fill="#1B2230" stroke="#5B6B85" stroke-width="4"/>
+    <circle cx="472" cy="354" r="20" fill="none" stroke="#475569" stroke-width="2.5" opacity="0.6"/>
+    <circle cx="472" cy="354" r="7" fill="#475569"/>
+  </g>
+  <g filter="url(#softGlow)">
+    <path d="M488 462 Q520 422 502 375" fill="none" stroke="#B8F228" stroke-width="6" stroke-linecap="round"/>
+    <path d="M517.1 384.8 L502 375 L497.3 392.4" fill="none" stroke="#B8F228" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+
+</svg>

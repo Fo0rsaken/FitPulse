@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="46%">
+      <stop offset="0%" stop-color="#27334A" stop-opacity="0.92"/>
+      <stop offset="62%" stop-color="#1A2232" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#161B26" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="limeFade" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#B8F228" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#B8F228" stop-opacity="1"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="800" fill="#161B26"/>
+  <rect width="800" height="800" fill="url(#bgGlow)"/>
+  <ellipse cx="400" cy="642" rx="285" ry="22" fill="#0C1018" opacity="0.65"/>
+  <rect x="120" y="632" width="560" height="10" rx="5" fill="#232C3D"/>
+  
+  <!-- 45-degree leg press sled rails -->
+  <line x1="200" y1="620" x2="585" y2="620" stroke="#475569" stroke-width="14" stroke-linecap="round"/>
+  <line x1="365" y1="535" x2="600" y2="235" stroke="#283244" stroke-width="18" stroke-linecap="round"/>
+  <!-- Back pad -->
+  <line x1="230" y1="435" x2="335" y2="555" stroke="#1F2736" stroke-width="32" stroke-linecap="round"/>
+  <!-- Sled footplate & plates -->
+  <line x1="478" y1="258" x2="558" y2="332" stroke="#475569" stroke-width="18" stroke-linecap="round"/>
+  <g>
+    <circle cx="556" cy="276" r="48" fill="#1B2230" stroke="#5B6B85" stroke-width="4"/>
+    <circle cx="556" cy="276" r="24" fill="none" stroke="#475569" stroke-width="2.5" opacity="0.6"/>
+    <circle cx="556" cy="276" r="7" fill="#475569"/>
+  </g>
+  <!-- Athlete pressing sled -->
+  <line x1="326" y1="530" x2="242" y2="440" stroke="#313B4F" stroke-width="44" stroke-linecap="round"/>
+  <line x1="300" y1="504" x2="334" y2="478" stroke="#B8F228" stroke-width="6"/>
+  <circle cx="216" cy="405" r="26" fill="#D5A688"/><path d="M190 405 C190 373, 242 373, 238 397 C210 393, 198 401, 194 413 Z" fill="#1C2331"/>
+  <line x1="338" y1="528" x2="415" y2="425" stroke="#242C3D" stroke-width="34" stroke-linecap="round"/>
+  <line x1="415" y1="425" x2="505" y2="315" stroke="#D5A688" stroke-width="28" stroke-linecap="round"/>
+  <ellipse cx="385" cy="465" rx="40" ry="20" transform="rotate(-52 385 465)" fill="#B8F228" opacity="0.22"/>
+  <g>
+      <path d="M498 292 L538 300 Q546 308 538 316 L496 316 Z" fill="#242C3D"/>
+      <line x1="496" y1="315" x2="540" y2="315" stroke="#B8F228" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  <g filter="url(#softGlow)">
+    <path d="M425 325 L518 212" fill="none" stroke="#B8F228" stroke-width="6" stroke-linecap="round"/>
+    <path d="M516.9 230.0 L518 212 L500.6 216.5" fill="none" stroke="#B8F228" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M426.1 307.0 L425 325 L442.4 320.5" fill="none" stroke="#B8F228" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+</svg>

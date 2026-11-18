@@ -1,6 +1,13 @@
-import { EXERCISES_MAP, estimateWorkoutStats } from './data.js';
+import { getExerciseById, estimateWorkoutStats } from './data.js';
 import { soundEngine } from './audio.js';
-import { addHistoryEntry, calculateStreak, getSettings, saveSettings } from './storage.js';
+import {
+  addHistoryEntry,
+  calculateStreak,
+  getLastPerformance,
+  getSettings,
+  saveSettings
+} from './storage.js';
+import { computeMuscleScores, renderBodyMapSVG } from './bodymap.js';
 
 const RING_RADIUS = 96;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
@@ -8,9 +15,9 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 function buildTimeline(workout) {
   const steps = [];
   const rounds = Math.max(1, Number(workout.rounds) || 1);
-  const prepSec = Number(workout.prepSec) ?? 8;
+  const prepSec = Number(workout.prepSec) ?? 5;
 
-  if (prepSec > 0 && workout.items.length > 0) {
+  if (prepSec > 0 && workout.items.length > 0 && workout.items[0].mode !== 'reps') {
     steps.push({
       phase: 'prep',
       phaseLabel: 'Подготовка',
@@ -26,9 +33,9 @@ function buildTimeline(workout) {
     workout.items.forEach((item, idx) => {
       if (item.mode === 'reps') {
         const sets = Math.max(1, Number(item.sets) || 3);
-        const reps = Math.max(1, Number(item.reps) || 12);
+        const reps = Math.max(1, Number(item.reps) || 10);
         const weightKg = Number(item.weightKg) || 0;
-        const restSec = Number(item.restSec) ?? 45;
+        const restSec = Number(item.restSec) ?? 60;
 
         for (let s = 1; s <= sets; s++) {
           steps.push({
@@ -121,6 +128,8 @@ export class WorkoutPlayer {
     this.intervalId = null;
     this.startedAt = null;
     this.loggedSets = [];
+    this.sessionWeightMemory = {};
+    this.completedExercises = new Set();
     this.completed = false;
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -135,6 +144,8 @@ export class WorkoutPlayer {
     this.completed = false;
     this.startedAt = Date.now();
     this.loggedSets = [];
+    this.sessionWeightMemory = {};
+    this.completedExercises = new Set();
 
     const settings = getSettings();
     soundEngine.configure(settings);
@@ -171,7 +182,11 @@ export class WorkoutPlayer {
     }
     this.stepIndex = Math.max(0, index);
     const step = this.steps[this.stepIndex];
-    const ex = EXERCISES_MAP[step.exerciseId] || { name: 'Упражнение', shortTip: '', image: '' };
+    const ex = getExerciseById(step.exerciseId) || { name: 'Упражнение', shortTip: '', image: '' };
+
+    if (step.phase === 'work') {
+      this.completedExercises.add(step.exerciseId);
+    }
 
     if (step.mode === 'time') {
       this.totalStepSec = step.durationSec;
@@ -187,7 +202,7 @@ export class WorkoutPlayer {
     if (announce) {
       if (step.phase === 'work') {
         soundEngine.playGo();
-        soundEngine.speak(`${ex.name}. Поехали!`);
+        soundEngine.speak(`${ex.name}. ${step.mode === 'reps' ? step.phaseLabel : 'Поехали!'}`);
       } else if (step.phase === 'rest' || step.phase === 'round-rest') {
         soundEngine.playRest();
         soundEngine.speak(`Отдых. Далее: ${ex.name}`);
@@ -238,15 +253,21 @@ export class WorkoutPlayer {
 
   completeRepSet() {
     const step = this.steps[this.stepIndex];
-    const ex = EXERCISES_MAP[step.exerciseId];
+    const ex = getExerciseById(step.exerciseId);
     const repsInput = this.content.querySelector('#playerRepsInput');
     const weightInput = this.content.querySelector('#playerWeightInput');
+    const reps = Math.max(1, Number(repsInput?.value) || step.reps);
+    const weightKg = Math.max(0, Number(weightInput?.value) || 0);
+
+    this.sessionWeightMemory[step.exerciseId] = { reps, weightKg };
     this.loggedSets.push({
+      exerciseId: step.exerciseId,
       exerciseName: ex ? ex.name : step.exerciseId,
       set: step.setNumber,
-      reps: Number(repsInput?.value) || step.reps,
-      weightKg: Number(weightInput?.value) || 0
+      reps,
+      weightKg
     });
+    this.completedExercises.add(step.exerciseId);
     this.enterStep(this.stepIndex + 1, true);
   }
 
@@ -261,30 +282,54 @@ export class WorkoutPlayer {
     const ratio = Math.min(1.4, Math.max(0.4, elapsedMin / Math.max(1, est.minutes)));
     const kcal = Math.max(15, Math.round(est.kcal * ratio));
 
+    const totalVolumeKg = Math.round(
+      this.loggedSets.reduce((sum, s) => sum + (Number(s.weightKg) || 0) * (Number(s.reps) || 0), 0)
+    );
+
+    // Compute exact worked muscles from logged sets + timed items
+    const muscleItems = this.loggedSets.length
+      ? this.loggedSets.map((s) => ({ exerciseId: s.exerciseId, sets: 1 }))
+      : this.workout.items.map((it) => ({
+          exerciseId: it.exerciseId,
+          sets: it.mode === 'reps' ? it.sets || 3 : Math.max(1, this.workout.rounds || 1)
+        }));
+    const { scores: muscleScores } = computeMuscleScores(muscleItems, getExerciseById);
+
     const entry = addHistoryEntry({
       workoutId: this.workout.id,
       workoutName: this.workout.name,
       categoryLabel: this.workout.categoryLabel || 'Тренировка',
       durationMin: elapsedMin,
       kcal,
+      totalVolumeKg,
       exercisesCount: this.workout.items.length,
-      setsLog: this.loggedSets
+      setsLog: this.loggedSets,
+      muscleScores
     });
 
     const streak = calculateStreak();
 
     this.content.innerHTML = `
-      <div class="complete-card">
+      <div class="complete-card complete-card-wide">
         <div class="complete-trophy">🏆</div>
         <h2 style="margin:0;font-size:1.65rem;font-weight:800;">Тренировка завершена!</h2>
         <p style="margin:0;color:var(--text-secondary);">
-          «${escapeHtml(this.workout.name)}» записана в твой календарь прогресса.
+          «${escapeHtml(this.workout.name)}» сохранена в календарь и карту мышц.
         </p>
-        <div class="complete-stats">
+
+        <div class="complete-stats ${totalVolumeKg > 0 ? 'complete-stats-4' : ''}">
           <div class="hero-stat-box">
             <div class="hero-stat-num">${elapsedMin} мин</div>
             <div class="hero-stat-label">Время</div>
           </div>
+          ${
+            totalVolumeKg > 0
+              ? `<div class="hero-stat-box">
+                  <div class="hero-stat-num">${totalVolumeKg.toLocaleString('ru-RU')} кг</div>
+                  <div class="hero-stat-label">Тоннаж</div>
+                </div>`
+              : ''
+          }
           <div class="hero-stat-box">
             <div class="hero-stat-num">~${kcal}</div>
             <div class="hero-stat-label">ккал</div>
@@ -294,20 +339,30 @@ export class WorkoutPlayer {
             <div class="hero-stat-label">Серия дней</div>
           </div>
         </div>
+
+        <div class="complete-bodymap-box">
+          <div style="font-weight:800;font-size:0.95rem;margin-bottom:8px;">Задействованные мышцы за тренировку</div>
+          ${renderBodyMapSVG(muscleScores, { compact: false })}
+        </div>
+
         ${
           this.loggedSets.length
-            ? `<div style="width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:12px 14px;max-height:160px;overflow-y:auto;">
-                <div style="font-weight:700;font-size:0.84rem;margin-bottom:8px;">Записанные подходы:</div>
+            ? `<div style="width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:12px 14px;max-height:190px;overflow-y:auto;">
+                <div style="font-weight:700;font-size:0.86rem;margin-bottom:8px;">Записанные подходы (${this.loggedSets.length}):</div>
                 ${this.loggedSets
                   .map(
                     (s) =>
-                      `<div style="font-size:0.82rem;color:var(--text-secondary);padding:3px 0;">• ${escapeHtml(s.exerciseName)} — подход ${s.set}: <strong>${s.reps} повт.</strong>${s.weightKg ? ` × ${s.weightKg} кг` : ''}</div>`
+                      `<div style="font-size:0.83rem;color:var(--text-secondary);padding:3px 0;display:flex;justify-content:space-between;gap:8px;">
+                        <span>• ${escapeHtml(s.exerciseName)} (подх. ${s.set})</span>
+                        <strong style="color:var(--text);white-space:nowrap;">${s.weightKg ? `${s.weightKg} кг × ` : ''}${s.reps} повт.</strong>
+                      </div>`
                   )
                   .join('')}
               </div>`
             : ''
         }
-        <button class="btn btn-primary btn-lg" id="playerDoneBtn" type="button" style="width:100%;margin-top:6px;">
+
+        <button class="btn btn-primary btn-lg" id="playerDoneBtn" type="button" style="width:100%;margin-top:4px;">
           Готово — вернуться к тренировкам
         </button>
       </div>
@@ -347,22 +402,26 @@ export class WorkoutPlayer {
   }
 
   requestExit() {
-    if (confirm('Завершить тренировку досрочно? Прогресс текущей сессии не будет сохранён.')) {
+    if (this.loggedSets.length > 0) {
+      if (confirm('Завершить тренировку сейчас и сохранить уже выполненные подходы на карте мышц?')) {
+        this.completeWorkout();
+      }
+      return;
+    }
+    if (confirm('Выйти из тренировки? Текущая сессия не будет сохранена.')) {
       this.close();
     }
   }
 
   render() {
     const step = this.steps[this.stepIndex];
-    const ex = EXERCISES_MAP[step.exerciseId] || {
+    const ex = getExerciseById(step.exerciseId) || {
       name: 'Упражнение',
       shortTip: '',
       image: 'assets/exercises/squats.jpg'
     };
-    const nextWorkStep = this.steps
-      .slice(this.stepIndex + 1)
-      .find((s) => s.phase === 'work');
-    const nextEx = nextWorkStep ? EXERCISES_MAP[nextWorkStep.exerciseId] : null;
+    const nextWorkStep = this.steps.slice(this.stepIndex + 1).find((s) => s.phase === 'work');
+    const nextEx = nextWorkStep ? getExerciseById(nextWorkStep.exerciseId) : null;
     const pct = Math.round(((this.stepIndex + 1) / this.steps.length) * 100);
     const settings = getSettings();
 
@@ -387,6 +446,13 @@ export class WorkoutPlayer {
     const frac = step.mode === 'time' ? this.remainingSec / Math.max(1, this.totalStepSec) : 1;
     const dashOffset = RING_CIRCUMFERENCE * (1 - Math.max(0, Math.min(1, frac)));
 
+    // Recall weight/reps from current session or previous history
+    const sessionPrev = this.sessionWeightMemory[step.exerciseId];
+    const historyPrev = getLastPerformance(step.exerciseId);
+    const defaultReps = sessionPrev?.reps ?? step.reps;
+    const defaultWeight =
+      sessionPrev?.weightKg ?? (historyPrev ? historyPrev.weightKg : step.weightKg || 0);
+
     this.content.innerHTML = `
       <div class="player-top">
         <div class="player-title-wrap">
@@ -402,7 +468,9 @@ export class WorkoutPlayer {
           <button class="icon-btn" id="playerVoiceBtn" type="button" title="Голосовая озвучка">
             ${settings.voiceEnabled ? '🗣️' : '💬'}
           </button>
-          <button class="btn btn-secondary btn-sm" id="playerExitBtn" type="button">Выйти</button>
+          <button class="btn btn-secondary btn-sm" id="playerExitBtn" type="button">
+            ${this.loggedSets.length ? 'Завершить' : 'Выйти'}
+          </button>
         </div>
       </div>
 
@@ -457,22 +525,36 @@ export class WorkoutPlayer {
               `
               : `
                 <div class="rep-box">
-                  <div>
-                    <div style="font-size:0.8rem;color:var(--text-secondary);font-weight:700;text-transform:uppercase;">Цель подхода</div>
-                    <div class="rep-target-big">${step.reps} повт.</div>
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                    <span style="font-size:0.8rem;color:var(--text-secondary);font-weight:700;text-transform:uppercase;">${escapeHtml(step.phaseLabel)}</span>
+                    ${
+                      historyPrev
+                        ? `<span style="font-size:0.76rem;color:var(--cyan);font-weight:600;">Прошлый: ${historyPrev.weightKg} кг × ${historyPrev.reps}</span>`
+                        : ''
+                    }
                   </div>
+
                   <div class="rep-inputs">
                     <div class="field-group">
-                      <label for="playerRepsInput">Сделано повторений</label>
-                      <input id="playerRepsInput" class="input-control" type="number" min="1" max="200" value="${step.reps}">
+                      <label for="playerWeightInput">Вес (кг)</label>
+                      <div class="stepper-inline">
+                        <button type="button" class="mini-step-btn" data-bump="#playerWeightInput" data-delta="-2.5">−</button>
+                        <input id="playerWeightInput" class="input-control" type="number" min="0" max="500" step="0.5" value="${defaultWeight}">
+                        <button type="button" class="mini-step-btn" data-bump="#playerWeightInput" data-delta="2.5">+</button>
+                      </div>
                     </div>
                     <div class="field-group">
-                      <label for="playerWeightInput">Вес (кг, 0 = свой)</label>
-                      <input id="playerWeightInput" class="input-control" type="number" min="0" max="500" step="0.5" value="${step.weightKg || 0}">
+                      <label for="playerRepsInput">Повторения</label>
+                      <div class="stepper-inline">
+                        <button type="button" class="mini-step-btn" data-bump="#playerRepsInput" data-delta="-1">−</button>
+                        <input id="playerRepsInput" class="input-control" type="number" min="1" max="200" value="${defaultReps}">
+                        <button type="button" class="mini-step-btn" data-bump="#playerRepsInput" data-delta="1">+</button>
+                      </div>
                     </div>
                   </div>
+
                   <button class="btn btn-primary btn-lg" id="playerDoneSetBtn" type="button">
-                    ✓ Подход выполнен
+                    ✓ Подход выполнен → отдых
                   </button>
                   <div class="player-controls">
                     <button class="btn btn-ghost btn-sm" id="playerPrevBtn" type="button">⏮ Назад</button>
@@ -493,7 +575,7 @@ export class WorkoutPlayer {
                 <div style="font-size:0.74rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Следующее упражнение</div>
                 <div style="font-weight:700;font-size:0.94rem;">${escapeHtml(nextEx.name)}</div>
               </div>
-              <span class="badge badge-soft">${nextWorkStep.mode === 'reps' ? `${nextWorkStep.reps} повт.` : `${nextWorkStep.durationSec} сек`}</span>
+              <span class="badge badge-soft">${nextWorkStep.mode === 'reps' ? `${nextWorkStep.weightKg ? `${nextWorkStep.weightKg} кг × ` : ''}${nextWorkStep.reps} повт.` : `${nextWorkStep.durationSec} сек`}</span>
             </div>
           `
           : ''
@@ -526,6 +608,17 @@ export class WorkoutPlayer {
 
     const plusBtn = this.content.querySelector('#playerPlusBtn');
     if (plusBtn) plusBtn.addEventListener('click', () => this.adjustTime(10));
+
+    this.content.querySelectorAll('[data-bump]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const input = this.content.querySelector(btn.dataset.bump);
+        if (!input) return;
+        const delta = Number(btn.dataset.delta);
+        const min = Number(input.min || 0);
+        const cur = Number(input.value) || 0;
+        input.value = String(Math.max(min, Math.round((cur + delta) * 10) / 10));
+      });
+    });
 
     const doneSetBtn = this.content.querySelector('#playerDoneSetBtn');
     if (doneSetBtn) doneSetBtn.addEventListener('click', () => this.completeRepSet());

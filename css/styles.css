@@ -1786,3 +1786,179 @@ button {
     bottom: calc(var(--bottom-nav-h) + 16px);
   }
 }
+
+/* ---------- Body Muscle Map & Gym Weight Stepper Enhancements ---------- */
+
+.bodymap-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.bodymap-figures {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.bodymap-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bodymap-caption {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bodymap-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.bodymap-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bodymap-legend i,
+.muscle-chip i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.bodymap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.muscle-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.complete-card-wide {
+  max-width: 640px;
+}
+
+.complete-stats-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.complete-bodymap-box {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.ex-detail-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.stepper-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepper-inline .input-control {
+  text-align: center;
+  padding: 10px 6px;
+}
+
+.mini-step-btn {
+  width: 38px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-hover);
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.mini-step-btn:hover {
+  border-color: var(--accent);
+}
+
+.builder-item-fields-4 {
+  grid-template-columns: 1fr 1.2fr 0.85fr 0.85fr;
+}
+
+.muscle-checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.muscle-check-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.muscle-check-pill:has(input:checked) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.history-item.clickable {
+  cursor: pointer;
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+
+.history-item.clickable:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 780px) {
+  .ex-detail-top-grid,
+  .builder-item-fields-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .complete-stats-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

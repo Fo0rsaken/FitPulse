@@ -123,12 +123,18 @@
         <section class="view" id="view-exercises" aria-label="Каталог упражнений">
           <div class="section-header">
             <div>
-              <h1>Каталог упражнений</h1>
-              <p class="section-subtitle">Подробная техника, иллюстрации, советы по дыханию и быстрый таймер</p>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <h1>Каталог упражнений</h1>
+                <span class="badge badge-accent" id="exerciseCountBadge">52 упр.</span>
+              </div>
+              <p class="section-subtitle">Топ-40 базовых упражнений в зале + домашние + создание своих</p>
             </div>
-            <div class="search-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="search" id="exerciseSearch" placeholder="Поиск упражнения..." autocomplete="off">
+            <div class="header-actions" style="align-items:center;">
+              <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="search" id="exerciseSearch" placeholder="Поиск упражнения..." autocomplete="off">
+              </div>
+              <button class="btn btn-primary btn-sm" id="createCustomExerciseBtn" type="button">+ Своё упражнение</button>
             </div>
           </div>
 

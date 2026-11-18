@@ -1,9 +1,10 @@
-// LocalStorage persistence + optional GitHub Gist cloud sync for cross-device progress
+// LocalStorage persistence + custom exercises + weight memory + optional GitHub Gist sync
 
 const KEYS = {
   THEME: 'fitpulse_theme',
   HISTORY: 'fitpulse_history_v1',
   CUSTOM_WORKOUTS: 'fitpulse_custom_workouts_v1',
+  CUSTOM_EXERCISES: 'fitpulse_custom_exercises_v1',
   SETTINGS: 'fitpulse_settings_v1',
   GH_SYNC: 'fitpulse_gh_sync_v1'
 };
@@ -70,6 +71,20 @@ export function deleteHistoryEntry(id) {
   autoPushGistIfConfigured().catch(() => {});
 }
 
+export function getLastPerformance(exerciseId) {
+  const history = getHistory();
+  for (const h of history) {
+    if (!Array.isArray(h.setsLog)) continue;
+    for (let i = h.setsLog.length - 1; i >= 0; i--) {
+      const s = h.setsLog[i];
+      if (s.exerciseId === exerciseId) {
+        return { weightKg: Number(s.weightKg) || 0, reps: Number(s.reps) || 0 };
+      }
+    }
+  }
+  return null;
+}
+
 export function getCustomWorkouts() {
   return readJSON(KEYS.CUSTOM_WORKOUTS, []);
 }
@@ -98,6 +113,36 @@ export function deleteCustomWorkout(id) {
   autoPushGistIfConfigured().catch(() => {});
 }
 
+/* ---------- Custom Exercises ---------- */
+
+export function getCustomExercises() {
+  return readJSON(KEYS.CUSTOM_EXERCISES, []);
+}
+
+export function saveCustomExercise(exercise) {
+  const list = getCustomExercises();
+  const idx = list.findIndex((e) => e.id === exercise.id);
+  const record = {
+    ...exercise,
+    isCustom: true,
+    updatedAt: new Date().toISOString()
+  };
+  if (idx >= 0) {
+    list[idx] = record;
+  } else {
+    list.unshift(record);
+  }
+  writeJSON(KEYS.CUSTOM_EXERCISES, list);
+  autoPushGistIfConfigured().catch(() => {});
+  return record;
+}
+
+export function deleteCustomExercise(id) {
+  const next = getCustomExercises().filter((e) => e.id !== id);
+  writeJSON(KEYS.CUSTOM_EXERCISES, next);
+  autoPushGistIfConfigured().catch(() => {});
+}
+
 export function toDateKey(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -112,7 +157,6 @@ export function calculateStreak(history = getHistory()) {
   const cursor = new Date();
   cursor.setHours(12, 0, 0, 0);
 
-  // Allow streak to continue if user hasn't trained yet today, starting from yesterday
   if (!days.has(toDateKey(cursor))) {
     cursor.setDate(cursor.getDate() - 1);
   }
@@ -129,17 +173,19 @@ export function getAggregateStats() {
   const totalSessions = history.length;
   const totalMinutes = history.reduce((sum, h) => sum + (Number(h.durationMin) || 0), 0);
   const totalKcal = history.reduce((sum, h) => sum + (Number(h.kcal) || 0), 0);
+  const totalVolumeKg = history.reduce((sum, h) => sum + (Number(h.totalVolumeKg) || 0), 0);
   const streak = calculateStreak(history);
-  return { totalSessions, totalMinutes, totalKcal, streak };
+  return { totalSessions, totalMinutes, totalKcal, totalVolumeKg, streak };
 }
 
 export function exportAllData() {
   return {
     app: 'FitPulse',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     history: getHistory(),
     customWorkouts: getCustomWorkouts(),
+    customExercises: getCustomExercises(),
     settings: getSettings()
   };
 }
@@ -166,6 +212,14 @@ export function importAllData(payload) {
       if (w && w.id) map.set(w.id, w);
     });
     writeJSON(KEYS.CUSTOM_WORKOUTS, Array.from(map.values()));
+  }
+  if (Array.isArray(payload.customExercises)) {
+    const existing = getCustomExercises();
+    const map = new Map(existing.map((e) => [e.id, e]));
+    payload.customExercises.forEach((e) => {
+      if (e && e.id) map.set(e.id, e);
+    });
+    writeJSON(KEYS.CUSTOM_EXERCISES, Array.from(map.values()));
   }
   if (payload.settings && typeof payload.settings === 'object') {
     saveSettings(payload.settings);
@@ -219,7 +273,6 @@ export async function syncPushToGist() {
       })
     });
   } else {
-    // Check if an existing FitPulse gist already exists
     const gists = await ghFetch('https://api.github.com/gists?per_page=30', cfg.token);
     const existing = gists.find((g) => g.files && g.files['fitpulse-data.json']);
     if (existing) {
@@ -274,6 +327,14 @@ export async function syncPullFromGist() {
 async function autoPushGistIfConfigured() {
   const cfg = getGitHubSyncConfig();
   if (cfg.token) {
+    await syncPushGistSafe();
+  }
+}
+
+async function syncPushGistSafe() {
+  try {
     await syncPushToGist();
+  } catch {
+    // Silent fail on background auto-sync
   }
 }
