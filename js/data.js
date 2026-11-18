@@ -47,7 +47,7 @@ function gymEx({
     equipmentLabel: EQ_LABELS[equipment] || equipment,
     difficulty,
     kcalPerMin,
-    image: `assets/exercises/${id}.svg`,
+    image: `assets/exercises/${id}.jpg`,
     isGymTop40: true,
     primaryMuscles,
     secondaryMuscles,
@@ -1295,7 +1295,7 @@ export const BUILTIN_EXERCISES = [
     equipmentLabel: 'Свой вес',
     difficulty: 'Лёгкий',
     kcalPerMin: 3.0,
-    image: 'assets/exercises/cobra-stretch.svg',
+    image: 'assets/exercises/cobra-stretch.jpg',
     primaryMuscles: ['lower_back', 'abs'],
     secondaryMuscles: ['chest'],
     defaultSets: 2,
@@ -1366,7 +1366,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/barbell-bench-press.svg',
+    coverImage: 'assets/exercises/barbell-bench-press.jpg',
     items: [
       { exerciseId: 'barbell-bench-press', mode: 'reps', sets: 4, reps: 8, weightKg: 60, restSec: 90 },
       { exerciseId: 'incline-dumbbell-press', mode: 'reps', sets: 3, reps: 10, weightKg: 20, restSec: 75 },
@@ -1386,7 +1386,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/lat-pulldown.svg',
+    coverImage: 'assets/exercises/lat-pulldown.jpg',
     items: [
       { exerciseId: 'deadlift', mode: 'reps', sets: 3, reps: 6, weightKg: 80, restSec: 120 },
       { exerciseId: 'lat-pulldown', mode: 'reps', sets: 4, reps: 12, weightKg: 45, restSec: 75 },
@@ -1406,7 +1406,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/barbell-squat.svg',
+    coverImage: 'assets/exercises/barbell-squat.jpg',
     items: [
       { exerciseId: 'barbell-squat', mode: 'reps', sets: 4, reps: 8, weightKg: 70, restSec: 120 },
       { exerciseId: 'romanian-deadlift', mode: 'reps', sets: 4, reps: 10, weightKg: 50, restSec: 90 },
@@ -1426,7 +1426,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/deadlift.svg',
+    coverImage: 'assets/exercises/deadlift.jpg',
     items: [
       { exerciseId: 'barbell-squat', mode: 'reps', sets: 3, reps: 8, weightKg: 60, restSec: 90 },
       { exerciseId: 'barbell-bench-press', mode: 'reps', sets: 3, reps: 8, weightKg: 55, restSec: 90 },
@@ -1545,7 +1545,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 2,
     prepSec: 5,
     roundRestSec: 20,
-    coverImage: 'assets/exercises/cobra-stretch.svg',
+    coverImage: 'assets/exercises/cobra-stretch.jpg',
     items: [
       { exerciseId: 'cobra-stretch', mode: 'time', durationSec: 45, restSec: 10 },
       { exerciseId: 'glute-bridge', mode: 'time', durationSec: 40, restSec: 10 },

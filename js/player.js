@@ -7,7 +7,7 @@ import {
   getSettings,
   saveSettings
 } from './storage.js';
-import { computeMuscleScores, renderBodyMapSVG } from './bodymap.js';
+import { computeMuscleScores, renderBodyMapSVG, renderCornerBodyBadge } from './bodymap.js';
 
 const RING_RADIUS = 96;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
@@ -482,6 +482,7 @@ export class WorkoutPlayer {
         <div class="player-visual-card">
           <img src="${ex.image}" alt="${escapeHtml(ex.name)}">
           <div class="player-phase-pill ${phaseClass}">${escapeHtml(step.phaseLabel)}</div>
+          ${renderCornerBodyBadge(ex.primaryMuscles, ex.secondaryMuscles, { size: 'lg' })}
         </div>
 
         <div class="player-timer-panel">

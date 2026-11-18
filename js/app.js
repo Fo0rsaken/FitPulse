@@ -28,7 +28,8 @@ import {
   MUSCLE_LABELS,
   MUSCLE_KEYS,
   computeMuscleScores,
-  renderBodyMapSVG
+  renderBodyMapSVG,
+  renderCornerBodyBadge
 } from './bodymap.js';
 import { WorkoutPlayer } from './player.js';
 import { StandaloneTimer } from './timer.js';
@@ -415,6 +416,7 @@ function renderExercisesView() {
             <img src="${ex.image}" alt="${escapeAttr(ex.name)}" loading="lazy">
             ${ex.isCustom ? `<span class="badge badge-accent" style="position:absolute;top:10px;left:10px;">Моё</span>` : ''}
             ${ex.isGymTop40 ? `<span class="badge badge-dark" style="position:absolute;top:10px;right:10px;">Зал</span>` : ''}
+            ${renderCornerBodyBadge(ex.primaryMuscles, ex.secondaryMuscles, { size: 'sm' })}
           </div>
           <div class="exercise-card-body">
             <h3 class="exercise-card-title">${escapeHtml(ex.name)}</h3>
@@ -456,7 +458,10 @@ function openExerciseDetailModal(ex) {
     </div>
     <div class="modal-body">
       <div class="ex-detail-top-grid">
-        <img class="modal-hero-img" src="${ex.image}" alt="${escapeAttr(ex.name)}" style="margin-bottom:0;">
+        <div class="modal-hero-wrap">
+          <img class="modal-hero-img" src="${ex.image}" alt="${escapeAttr(ex.name)}" style="margin-bottom:0;">
+          ${renderCornerBodyBadge(ex.primaryMuscles, ex.secondaryMuscles, { size: 'sm' })}
+        </div>
         <div class="panel-card" style="padding:12px;border-radius:16px;">
           <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;text-align:center;">Задействованные мышцы</div>
           ${renderBodyMapSVG(scores, { compact: true })}

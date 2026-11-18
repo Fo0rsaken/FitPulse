@@ -91,7 +91,7 @@ export class WorkoutBuilder {
       rounds: Math.max(1, Number(this.draft.rounds) || 1),
       prepSec: Math.max(0, Number(this.draft.prepSec) || 5),
       roundRestSec: Math.max(0, Number(this.draft.roundRestSec) || 30),
-      coverImage: firstEx ? firstEx.image : 'assets/exercises/barbell-bench-press.svg',
+      coverImage: firstEx ? firstEx.image : 'assets/exercises/barbell-bench-press.jpg',
       items: this.draft.items.map((it) =>
         it.mode === 'reps'
           ? {

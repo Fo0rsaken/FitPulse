@@ -1962,3 +1962,47 @@ button {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ---------- Corner Mini Body Muscle Overlay on Exercise Images ---------- */
+
+.modal-hero-wrap {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #161b26;
+}
+
+.corner-bodymap-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 6px;
+  border-radius: 12px;
+  background: rgba(11, 15, 23, 0.84);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.corner-bodymap-badge svg {
+  display: block;
+  width: auto;
+}
+
+.corner-bodymap-lg {
+  right: 12px;
+  bottom: 12px;
+  padding: 7px 9px;
+  gap: 5px;
+  border-radius: 15px;
+}
+
+.exercise-card-img {
+  aspect-ratio: 4 / 3;
+}
