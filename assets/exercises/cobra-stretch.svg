@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="54%" r="44%">
+      <stop offset="0%" stop-color="#263147" stop-opacity="0.9"/>
+      <stop offset="65%" stop-color="#1A2130" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#161B26" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="limeGlow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B8F228" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#B8F228" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Studio dark slate background -->
+  <rect width="800" height="800" fill="#161B26"/>
+  <rect width="800" height="800" fill="url(#glow)"/>
+
+  <!-- Minimal dark mat -->
+  <ellipse cx="400" cy="596" rx="285" ry="26" fill="#0E121B" opacity="0.65"/>
+  <path d="M135 588 Q400 572 665 588 L645 606 Q400 594 155 606 Z" fill="#232B3B" stroke="#313C52" stroke-width="2"/>
+
+  <!-- Restorative lime motion flow arc -->
+  <path d="M350 305 C425 225, 535 235, 588 308" fill="none" stroke="url(#limeGlow)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M565 294 L591 312 L589 281" fill="none" stroke="#B8F228" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M235 450 C295 395, 375 372, 445 375" fill="none" stroke="#B8F228" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 12" opacity="0.55"/>
+
+  <!-- Athlete performing Cobra Stretch (side view) -->
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <!-- Far arm (supporting) -->
+    <path d="M520 422 L536 575" stroke="#364156" stroke-width="24"/>
+    <ellipse cx="542" cy="582" rx="18" ry="8" fill="#364156"/>
+
+    <!-- Legs & feet resting along mat -->
+    <path d="M205 568 L372 562 L416 544" fill="none" stroke="#2D3648" stroke-width="34"/>
+    <path d="M196 572 L365 566 L418 548" fill="none" stroke="#3A455C" stroke-width="30"/>
+
+    <!-- Sneakers with electric lime sole/accent -->
+    <path d="M174 552 L212 556 L208 584 L168 578 Q162 566 174 552 Z" fill="#242C3D"/>
+    <path d="M168 576 L208 582" stroke="#B8F228" stroke-width="6"/>
+    <path d="M180 562 L198 564" stroke="#B8F228" stroke-width="3.5"/>
+
+    <!-- Shorts / waist with electric lime waistband -->
+    <path d="M342 544 Q395 538 446 534 L452 574 Q398 580 342 576 Z" fill="#242C3C"/>
+    <path d="M416 530 L424 574" stroke="#B8F228" stroke-width="7"/>
+
+    <!-- Arched Torso / Athletic top -->
+    <path d="M418 552 C464 532, 492 486, 514 420 C522 396, 545 388, 560 404 C570 416, 562 454, 535 504 C508 552, 466 576, 420 572 Z" fill="#343F54"/>
+    <!-- Subtle geometric highlight on chest/back -->
+    <path d="M432 544 C472 522, 498 476, 518 418" fill="none" stroke="#47556F" stroke-width="8" opacity="0.7"/>
+
+    <!-- Near supporting arm -->
+    <path d="M536 420 L554 574" stroke="#C99A7C" stroke-width="24"/>
+    <!-- Sleeve -->
+    <path d="M532 414 L540 458" stroke="#343F54" stroke-width="29"/>
+    <!-- Wristband accent -->
+    <path d="M549 544 L554 556" stroke="#B8F228" stroke-width="25" stroke-linecap="butt"/>
+    <!-- Hand flat on mat -->
+    <path d="M548 576 L584 580" stroke="#C99A7C" stroke-width="14"/>
+
+    <!-- Neck & Head gently lifted -->
+    <path d="M542 394 L562 362" stroke="#C99A7C" stroke-width="22"/>
+    <circle cx="576" cy="340" r="32" fill="#D5A688"/>
+    <!-- Stylized dark hair -->
+    <path d="M544 336 C544 308, 578 298, 598 314 C584 316, 570 324, 562 342 C552 342, 546 340, 544 336 Z" fill="#1F2636"/>
+    <circle cx="539" cy="330" r="11" fill="#1F2636"/>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+{
+  "name": "FitPulse — Тренировки и Таймеры",
+  "short_name": "FitPulse",
+  "description": "Адаптивное приложение для домашних и силовых тренировок с иллюстрациями, интервальными таймерами, конструктором программ и календарём прогресса.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0B0F17",
+  "theme_color": "#0B0F17",
+  "orientation": "portrait-primary",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
