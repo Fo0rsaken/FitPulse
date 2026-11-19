@@ -1,5 +1,8 @@
 import { getCustomExercises } from './storage.js';
 
+const IMG_VER = 'v5';
+const imgUrl = (path) => `${path}?${IMG_VER}`;
+
 const EQ_LABELS = {
   barbell: 'Штанга',
   dumbbells: 'Гантели',
@@ -47,7 +50,7 @@ function gymEx({
     equipmentLabel: EQ_LABELS[equipment] || equipment,
     difficulty,
     kcalPerMin,
-    image: `assets/exercises/${id}.jpg`,
+    image: imgUrl(`assets/exercises/${id}.jpg`),
     isGymTop40: true,
     primaryMuscles,
     secondaryMuscles,
@@ -1366,7 +1369,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/barbell-bench-press.jpg',
+    coverImage: imgUrl('assets/exercises/barbell-bench-press.jpg'),
     items: [
       { exerciseId: 'barbell-bench-press', mode: 'reps', sets: 4, reps: 8, weightKg: 60, restSec: 90 },
       { exerciseId: 'incline-dumbbell-press', mode: 'reps', sets: 3, reps: 10, weightKg: 20, restSec: 75 },
@@ -1386,7 +1389,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/lat-pulldown.jpg',
+    coverImage: imgUrl('assets/exercises/lat-pulldown.jpg'),
     items: [
       { exerciseId: 'deadlift', mode: 'reps', sets: 3, reps: 6, weightKg: 80, restSec: 120 },
       { exerciseId: 'lat-pulldown', mode: 'reps', sets: 4, reps: 12, weightKg: 45, restSec: 75 },
@@ -1426,7 +1429,7 @@ export const BUILTIN_WORKOUTS = [
     rounds: 1,
     prepSec: 5,
     roundRestSec: 0,
-    coverImage: 'assets/exercises/deadlift.jpg',
+    coverImage: imgUrl('assets/exercises/deadlift.jpg'),
     items: [
       { exerciseId: 'barbell-squat', mode: 'reps', sets: 3, reps: 8, weightKg: 60, restSec: 90 },
       { exerciseId: 'barbell-bench-press', mode: 'reps', sets: 3, reps: 8, weightKg: 55, restSec: 90 },
